@@ -37,6 +37,32 @@ The `github_repositories.tf` file is responsible for setting up new GitHub repos
 2. Modify the example configurations to match your specific deployment requirements.
 3. Apply your Terraform configurations to set up the environment in Azure and manage it through Terraform Cloud.
 
+
+## Security Recommendations
+
+When using Station, given that the identity running the Terraform plan and apply commands has Global Administrator access, we strongly recommend the following security practices for enhanced protection:
+
+### Limit Access to the Repository
+
+- **Restricted Access**: Limit the number of users who have access to this repository. Only team members who need to deploy new workload environments should have access.
+- **Two-Factor Authentication (2FA)**: Ensure all users with access to this repository have enabled 2FA. This adds an extra layer of security against unauthorized access.
+
+### Disable Auto Apply in Terraform Cloud
+
+- **Manual Review of Changes**: We advise not enabling auto apply in TFC. This practice ensures that all changes undergo manual review and approval before they are applied, reducing the risk of unintended or malicious alterations.
+
+### Protect the Trunk Branch
+
+- **Branch Protection Rules**: Implement branch protection on the trunk branch to prevent direct pushes. Changes should only be made via pull requests.
+- **Mandatory Code Reviews**: Require pull request reviews for all changes. This adds an additional layer of security, ensuring every modification is thoroughly vetted by at least one other team member before merging.
+
+### Acknowledge the Risks
+
+- **Risk Awareness**: Ensure that all users with access to this repository understand the risks associated.
+
+Following these security recommendations will greatly enhance the safety and integrity of your Station deployments, ensuring they are managed securely and responsibly.
+
+
 ## Need Help?
 
 If you have questions or encounter any issues, please refer to the [Station GitHub page](https://github.com/blinqas/station) for detailed documentation and support resources.
