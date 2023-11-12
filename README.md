@@ -14,14 +14,19 @@ Welcome to your Station Deployments repository! This repository, automatically c
 
 ## Understanding the Example Workload Configuration
 
-In `workload_example-workload.tf`, we have an example module `example_workload` that demonstrates:
+In the `workload_example-workload.tf` file, the `example_workload` module is provided as an illustrative example that demonstrates how to create a new workload. This is what the file would create/do:
 
-- How to specify the Station module source and version.
-- Setting up a basic environment and resource group in Azure.
-- Configuring a Terraform Cloud workspace with descriptions, VCS repository connections, and branch specifications.
-- Creating an Entra ID security group that will available for the new workload.
+- **Resource Group**: Establishes a resource group in Azure for the workload.
+- **Managed Identity**: Creates a managed identity with the Service Principal assigned as Owner on the resource group.
+- **Federated Credential**: Sets up a Federated Credential for OIDC to authenticate Terraform Cloud runners.
+- **Terraform Cloud (TFC) Workspace**:
+  - Configured to run on commits to the trunk branch.
+  - Configured to authenticate to VCS with a token already present in Terraform Cloud.
+- **TFC Environment Variables**: Sets up environment variables for OIDC authentication with the Managed Identity.
+- **Entra ID Security Group**: Creates a new security group that can be used/referenced by the workload.
 
-This example serves as a template to create and manage individual workload environments, each tailored to specific requirements.
+This example serves as a comprehensive template to create and manage individual workload environments, each tailored to specific requirements.
+
 
 ### GitHub Repositories Configuration
 
