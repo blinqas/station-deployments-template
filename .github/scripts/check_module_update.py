@@ -73,8 +73,10 @@ if latest_version != current_version:
     run_command(f'git config --global user.name "{github_actor}"')
     run_command(f'git config --global user.email "{github_actor}@users.noreply.github.com"')
 
-    branch_name = f"update-terraform-module-{latest_version}"
+    branch_name = f"update-station-module-{latest_version}"
+    run_command('git fetch --all')
 
+    # Check if the branch exists and handle accordingly
     if check_existing_branch(branch_name, headers):
         print(f"Branch {branch_name} already exists. Checking out and updating it.")
         run_command(f'git checkout {branch_name}')
