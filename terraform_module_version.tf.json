@@ -1,0 +1,9 @@
+{
+    "variable": {
+      "module_version": {
+        "description": "The version of the Terraform module",
+        "default": "v1.5.0"
+      }
+    }
+  }
+  
