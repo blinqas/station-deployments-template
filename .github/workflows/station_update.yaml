@@ -1,4 +1,4 @@
-name: Update station TF module
+name: Checks for updates to the station TF module
 
 on:
   schedule:
