@@ -3,7 +3,6 @@ import requests
 import os
 import subprocess
 import sys
-from datetime import datetime
 
 def run_command(command):
     try:
@@ -35,18 +34,15 @@ def check_existing_pull_request(branch_name, headers):
 
 validate_env_variables()
 
-# Load environment variables
 github_token = os.environ['GITHUB_TOKEN']
 github_repository = os.environ['GITHUB_REPOSITORY']
 github_actor = os.environ['GITHUB_ACTOR']
 
-# Headers for GitHub API requests
 headers = {
     'Authorization': f'token {github_token}',
     'Accept': 'application/vnd.github.v3+json'
 }
 
-# Load current module version from .tf.json file
 try:
     with open('terraform_module_version.tf.json', 'r') as file:
         data = json.load(file)
@@ -55,7 +51,6 @@ except Exception as e:
     print(f"Failed to read or parse terraform_module_version.tf.json: {e}")
     sys.exit(1)
 
-# Fetch latest release version from GitHub
 try:
     response = requests.get('https://api.github.com/repos/blinqas/station/releases/latest')
     response.raise_for_status()
@@ -65,7 +60,6 @@ except Exception as e:
     print(f"Failed to fetch latest release from GitHub: {e}")
     sys.exit(1)
 
-# Compare and update file if new version is found
 if latest_version != current_version:
     print('Trying to update to version: ' + latest_version)
     data['variable']['module_version']['default'] = latest_version
@@ -76,39 +70,29 @@ if latest_version != current_version:
         print(f"Failed to write updated version to terraform_module_version.tf.json: {e}")
         sys.exit(1)
 
-    # Setting up Git configuration
     run_command(f'git config --global user.name "{github_actor}"')
     run_command(f'git config --global user.email "{github_actor}@users.noreply.github.com"')
 
-    # Creating a new branch
-    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
-    branch_name = f"update-terraform-module-{latest_version}-{current_time}"
-    
-    # Check if the branch already exists
-    if check_existing_branch(branch_name, headers):
-        print(f"Branch {branch_name} already exists.")
-        if check_existing_pull_request(branch_name, headers):
-            print("No new pull request created as an existing one is open.")
-            sys.exit(0)
-        else:
-            print("Updating existing branch.")
+    branch_name = f"update-terraform-module-{latest_version}"
 
-    if not check_existing_pull_request(branch_name, headers):
+    if check_existing_branch(branch_name, headers):
+        print(f"Branch {branch_name} already exists. Checking out and updating it.")
+        run_command(f'git checkout {branch_name}')
+        run_command('git pull origin ' + branch_name)
+    else:
+        print(f"Creating new branch {branch_name}.")
         run_command(f'git checkout -b {branch_name}')
 
-        # Committing the changes
-        run_command('git add terraform_module_version.tf.json')
-        run_command(f'git commit -m "Update Terraform module version to {latest_version}"')
+    run_command('git add terraform_module_version.tf.json')
+    run_command(f'git commit -m "Update Terraform module version to {latest_version}"')
+    run_command(f'git push --set-upstream origin {branch_name}')
 
-        # Pushing the changes
-        run_command(f'git push --set-upstream origin {branch_name}')
-
-        # Creating a pull request
+    if not check_existing_pull_request(branch_name, headers):
         payload = {
             'title': f'Update Terraform Module to {latest_version}',
             'body': 'This is an auto-generated PR with the updated Terraform module version.',
             'head': branch_name,
-            'base': 'trunk'  # Change to your default branch if different
+            'base': 'main'  # Change to your default branch if different
         }
         try:
             pr_response = requests.post(f'https://api.github.com/repos/{github_repository}/pulls', json=payload, headers=headers)
