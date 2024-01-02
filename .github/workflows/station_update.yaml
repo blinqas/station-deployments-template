@@ -23,3 +23,7 @@ jobs:
 
       - name: Check for new module release and create PR
         run: python .github/scripts/check_module_update.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_ACTOR: ${{ github.actor }}
