@@ -3,6 +3,7 @@ import requests
 import os
 import subprocess
 import sys
+from datetime import datetime
 
 def run_command(command):
     try:
@@ -62,7 +63,8 @@ if latest_version != current_version:
     run_command(f'git config --global user.email "{github_actor}@users.noreply.github.com"')
 
     # Creating a new branch
-    branch_name = f"update-terraform-module-{latest_version}"
+    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+    branch_name = f"update-terraform-module-{latest_version}-{current_time}"
     run_command(f'git checkout -b {branch_name}')
 
     # Committing the changes
