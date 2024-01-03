@@ -44,11 +44,11 @@ headers = {
 }
 
 try:
-    with open('terraform_module_version.tf.json', 'r') as file:
+    with open('station_version.tf.json', 'r') as file:
         data = json.load(file)
         current_version = data['variable']['module_version']['default']
 except Exception as e:
-    print(f"Failed to read or parse terraform_module_version.tf.json: {e}")
+    print(f"Failed to read or parse station_version.tf.json: {e}")
     sys.exit(1)
 
 try:
@@ -64,16 +64,16 @@ if latest_version != current_version:
     print('Trying to update to version: ' + latest_version)
     data['variable']['module_version']['default'] = latest_version
     try:
-        with open('terraform_module_version.tf.json', 'w') as file:
+        with open('station_version.tf.json', 'w') as file:
             json.dump(data, file, indent=4)
     except Exception as e:
-        print(f"Failed to write updated version to terraform_module_version.tf.json: {e}")
+        print(f"Failed to write updated version to station_version.tf.json: {e}")
         sys.exit(1)
 
     run_command(f'git config --global user.name "{github_actor}"')
     run_command(f'git config --global user.email "{github_actor}@users.noreply.github.com"')
 
-    run_command('git add terraform_module_version.tf.json')
+    run_command('git add station_version.tf.json')
 
     status_output = subprocess.run('git status --porcelain', shell=True, stdout=subprocess.PIPE).stdout.decode().strip()
     if status_output:
